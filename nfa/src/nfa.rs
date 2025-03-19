@@ -149,17 +149,22 @@ impl NFA {
             if c == '_' || !self.alphabet.contains(&c) {
                 return false;
             }
-            next_states = BitVec::from_elem(self.state_num, false);
-            for i in 0..self.state_num {
-                if current_states[i] {
-                    if let Some(states) = self.transitions[i].get(&'_') {
-                        next_states.or(states);
-                    } else {
-                        panic!("BitVec does not exist for specified state and letter");
+            loop {
+                next_states = BitVec::from_elem(self.state_num, false);
+                for i in 0..self.state_num {
+                    if current_states[i] {
+                        if let Some(states) = self.transitions[i].get(&'_') {
+                            next_states.or(states);
+                        } else {
+                            panic!("BitVec does not exist for specified state and letter");
+                        }
                     }
                 }
+                if next_states == current_states {
+                    break;
+                }
+                current_states = next_states;
             }
-            current_states = next_states;
             if verbose {
                 println!(
                     "|-({}, \"{}\")",
@@ -186,17 +191,22 @@ impl NFA {
                 );
             }
         }
-        next_states = BitVec::from_elem(self.state_num, false);
-        for i in 0..self.state_num {
-            if current_states[i] {
-                if let Some(states) = self.transitions[i].get(&'_') {
-                    next_states.or(states);
-                } else {
-                    panic!("BitVec does not exist for specified state and letter");
+        loop {
+            next_states = BitVec::from_elem(self.state_num, false);
+            for i in 0..self.state_num {
+                if current_states[i] {
+                    if let Some(states) = self.transitions[i].get(&'_') {
+                        next_states.or(states);
+                    } else {
+                        panic!("BitVec does not exist for specified state and letter");
+                    }
                 }
             }
+            if next_states == current_states {
+                break;
+            }
+            current_states = next_states;
         }
-        current_states = next_states;
         if verbose {
             println!("|-({}, \"{}\")", NFA::bitvec_to_string(&current_states), "");
         }
